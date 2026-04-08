@@ -65,10 +65,6 @@ void core_run(void) {
 		for (j = _core_state._window_arr.data[i].layer_stack.start; j < _core_state._window_arr.data[i].layer_stack.end; ++j)
 			_core_state._window_arr.data[i].layer_stack.data[j].on_event(&event);
 
-		for (j = _core_state._window_arr.data[i].layer_stack.start; j < _core_state._window_arr.data[i].layer_stack.end; ++j)
-			_core_state._window_arr.data[i].layer_stack.data[j].init();
-
-
 		LOG("[Core] All Layers succesfully initialized for window %#" PRIx64 " with name '%s'", _core_state._window_arr.data[i].id, _core_state._window_arr.data[i].name);
 	}
 	LOG("[Core] All Windows succesfully initialized");
@@ -135,10 +131,6 @@ void core_run(void) {
         if (_core_state._window_main.id != ENN_WINDOW_INVALID_ID) {
                 glfwMakeContextCurrent(_core_state._window_main.handle);
                 glClearColor(_core_state._window_main.buffer_clear_color.x, _core_state._window_main.buffer_clear_color.y, _core_state._window_main.buffer_clear_color.z, _core_state._window_main.buffer_clear_color.w);
-
-                for (i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end; ++i)
-                        _core_state._window_main.layer_stack.data[i].init();
-
 
                 LOG("[Core] All Layers succesfully initialized for window %#" PRIx64 " with name '%s'", _core_state._window_main.id, _core_state._window_main.name);
 

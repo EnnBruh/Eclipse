@@ -9,7 +9,7 @@
  
   #define ENN_DEBUG_MODE
 
-//   #define ENN_APP_DIRECTORY "App"
+  #define ENN_APP_DIRECTORY "Eclipse"
 //   #define ENN_DATA_PATH "/Data/"
 //   #define ENN_LOGS_PATH "/Data/Logs/"
 
@@ -48,9 +48,12 @@
 //   #define ENN_WINDOW_MIN_WIDTH 320
 //   #define ENN_WINDOW_MIN_HEIGHT 180
 
-//   #define ENN_USE_CUSTOM_RENDERING
+  #define ENN_USE_CUSTOM_RENDERING
 //   #define ENN_DEFAULT_RENDERER_VERTEX_BUFF_SIZE 2048
 
+
+  #define ENN_USER_DEFINED_EVENTS       \
+                ENN_NETWORK_SEND_PCKT_EVENT
 //   #define ENN_ASSETS_PATH "/Assets/"
 //   #define ENN_SHADERS_PATH "/Assets/Shaders/"
 //   #define ENN_TEXTURES_PATH "/Assets/Textures/"

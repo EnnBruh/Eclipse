@@ -23,6 +23,10 @@
 
 typedef i32 	EventID;
 
+
+#ifndef ENN_USER_DEFINED_EVENTS
+#       define ENN_USER_DEFINED_EVENTS
+#endif
 typedef enum {
 	ENN_WINDOW_REGISTER_EVENT,
 

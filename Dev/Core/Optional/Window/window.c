@@ -347,6 +347,7 @@ LayerID window_push_layer(WindowID id, Layer* layer) {
         DEBUG_ASSERT(window != NULL, "Could not find window with id %#" PRIx64, id);
         
         layer -> id = _layer_id_generator++;
+        layer -> init();
         vector_push_back(window -> layer_stack, *layer);
 	// vector_sort(window -> layer_stack);
 
@@ -745,6 +746,7 @@ LayerID window_push_layer(Layer* layer) {
         DEBUG_TRACE();
         DEBUG_ASSERT(layer != NULL);
         layer -> id = _layer_id_generator++;
+        layer -> init();
         vector_push_back(_core_state._window_main.layer_stack, *layer);
 	// vector_sort(_core_state._window_main.layer_stack);
 
