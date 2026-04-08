@@ -349,7 +349,7 @@ LayerID window_push_layer(WindowID id, Layer* layer) {
         layer -> id = _layer_id_generator++;
         layer -> init();
         vector_push_back(window -> layer_stack, *layer);
-	// vector_sort(window -> layer_stack);
+	vector_sort(window -> layer_stack, __layer_compare, window -> layer_stack.start, window -> layer_stack.end);
 
         DEBUG_UNTRACE();
         return _layer_id_generator - 1;
@@ -748,23 +748,34 @@ LayerID window_push_layer(Layer* layer) {
         layer -> id = _layer_id_generator++;
         layer -> init();
         vector_push_back(_core_state._window_main.layer_stack, *layer);
-	// vector_sort(_core_state._window_main.layer_stack);
+	vector_sort(_core_state._window_main.layer_stack, __layer_compare, _core_state._window_main.layer_stack.start, _core_state._window_main.layer_stack.end);
 
         DEBUG_UNTRACE();
         return _layer_id_generator - 1;
 }
 
-void window_remove_layer(LayerID layer) {
-	DEBUG_TRACE();
-	for (i32 i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end; ++i)
-		if (_core_state._window_main.layer_stack.data[i].id == layer) {
-			vector_remove_at_index(_core_state._window_main.layer_stack, i);
-			DEBUG_UNTRACE();
-			return ;
-		}
-	// vector_sort(_core_state._window_main.layer_stack);
+void layer_set_active(LayerID id) {
+        DEBUG_TRACE();
+        for (i32 i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end; ++i)
+                if (id == _core_state._window_main.layer_stack.data[i].id) {
+                        _core_state._window_main.layer_stack.data[i].active = true;
+                        vector_sort(_core_state._window_main.layer_stack, __layer_compare, _core_state._window_main.layer_stack.start, _core_state._window_main.layer_stack.end);
+                        DEBUG_UNTRACE();
+                        return;
+                }
+        DEBUG_UNTRACE();
+}
 
-	DEBUG_UNTRACE();
+void layer_set_inactive(LayerID id) {
+        DEBUG_TRACE();
+        for (i32 i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end; ++i)
+                if (id == _core_state._window_main.layer_stack.data[i].id) {
+                        _core_state._window_main.layer_stack.data[i].active = false;
+                        vector_sort(_core_state._window_main.layer_stack, __layer_compare, _core_state._window_main.layer_stack.start, _core_state._window_main.layer_stack.end);
+                        DEBUG_UNTRACE();
+                        return;
+                }
+        DEBUG_UNTRACE();
 }
 
 void window_set_fullscreen(bool state) {

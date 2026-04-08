@@ -1,5 +1,7 @@
 #include "Layers/layers.h"
 
+LayerID network_layer_id;
+
 void network_layer_init(void) {
         LOG("[Network] Layer test");
 }

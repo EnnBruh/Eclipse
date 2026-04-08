@@ -646,22 +646,61 @@ extern "C" {
         DEBUG_UNTRACE();																											\
     } while (0)
 
-    /* Block Sort Perchance */
-# 	define vector_sort(_vec, _cmp, _start, _end)																									        \
-    do {																													        \
+# 	define vector_sort(_vec, _cmp, _start, _end)																					                        \
+    do {																													\
         DEBUG_TRACE(vector_sort);																										\
         if (vector_size(_vec) == 0) {																									        \
             DEBUG_LOG_WARN("Unnecessary sort request on empty vector '%s'", TO_STR(_vec));																		        \
-            DEBUG_UNTRACE();																										\
+            DEBUG_UNTRACE();																										        \
             break;																											        \
         }																												        \
         if ((_start) >= (_end)) {																									        \
             DEBUG_LOG_WARN("Requested sort on vector '%s' with bounds '%s' and '%s' which do not create a valid sequence for sorting", TO_STR(_vec), TO_STR(_start), TO_STR(_end));							        \
-            DEBUG_UNTRACE();																										\
+            DEBUG_UNTRACE();																										        \
             break;																											        \
         }																												        \
         DEBUG_ASSERT(((_start) >= (_vec).start) && ((_start) <= (_vec).end), "Requested sort starting at '%s' which is outside of vector '%s' bounds", TO_STR(_start), TO_STR(_vec));							        \
         DEBUG_ASSERT(((_end) >= (_vec).start) && ((_end) <= (_vec).end), "Requested sort ending at '%s' which is outside of vector '%s' bounds", TO_STR(_end), TO_STR(_vec));								        \
+                                                                                                                                                                                                                                                \
+        i32 __internal_stack[64]; /* Only need log2(2^31) for call stack so 62 for left and right index */                                                                                                                                      \
+        i32 __internal_stack_top = -1;                                                                                                                                                                                                          \
+        __internal_stack[++__internal_stack_top] = (_start);                                                                                                                                                                                    \
+        __internal_stack[++__internal_stack_top] = (_end) - 1;                                                                                                                                                                                  \
+                                                                                                                                                                                                                                                \
+        while (__internal_stack_top >= 0) {                                                                                                                                                                                                     \
+            i32 __right = __internal_stack[__internal_stack_top--];                                                                                                                                                                             \
+            i32 __left  = __internal_stack[__internal_stack_top--];                                                                                                                                                                             \
+            if (__left >= __right) continue;                                                                                                                                                                                                    \
+                                                                                                                                                                                                                                                \
+            i32 __mid = __left + (__right - __left) / 2;                                                                                                                                                                                        \
+            if (__mid != __right) {                                                                                                                                                                                                             \
+                swap((_vec).data[__mid], (_vec).data[__right]);                                                                                                                                                                                 \
+            }                                                                                                                                                                                                                                   \
+                                                                                                                                                                                                                                                \
+            i32 __i = __left - 1;                                                                                                                                                                                                               \
+            for (i32 __j = __left; __j < __right; ++__j) {                                                                                                                                                                                      \
+                if (_cmp((_vec).data[__j], (_vec).data[__right]) == ENN_SMALLER) {                                                                                                                                                              \
+                    ++__i;                                                                                                                                                                                                                      \
+                    if (__i != __j) {                                                                                                                                                                                                           \
+                        swap((_vec).data[__i], (_vec).data[__j]);                                                                                                                                                                               \
+                    }                                                                                                                                                                                                                           \
+                }                                                                                                                                                                                                                               \
+            }                                                                                                                                                                                                                                   \
+            ++__i;                                                                                                                                                                                                                              \
+            if (__i != __right) {                                                                                                                                                                                                               \
+                swap((_vec).data[__i], (_vec).data[__right]);                                                                                                                                                                                   \
+            }                                                                                                                                                                                                                                   \
+                                                                                                                                                                                                                                                \
+            i32 __left_size = (__i - 1) - __left;                                                                                                                                                                                               \
+            i32 __right_size = __right - (__i + 1);                                                                                                                                                                                             \
+            if (__left_size > __right_size) {                                                                                                                                                                                                   \
+                if (__left_size > 0)  { __internal_stack[++__internal_stack_top] = __left; __internal_stack[++__internal_stack_top] = __i - 1; }                                                                                                \
+                if (__right_size > 0) { __internal_stack[++__internal_stack_top] = __i + 1; __internal_stack[++__internal_stack_top] = __right; }                                                                                               \
+            } else {                                                                                                                                                                                                                            \
+                if (__right_size > 0) { __internal_stack[++__internal_stack_top] = __i + 1; __internal_stack[++__internal_stack_top] = __right; }                                                                                               \
+                if (__left_size > 0)  { __internal_stack[++__internal_stack_top] = __left; __internal_stack[++__internal_stack_top] = __i - 1; }                                                                                                \
+            }                                                                                                                                                                                                                                   \
+        }                                                                                                                                                                                                                                       \
         DEBUG_UNTRACE();																											\
     } while (0)
 

@@ -11,17 +11,18 @@ void app_init(void) {
                 .is_resizable = true
         });
 
-        window_push_layer(&(Layer) {
+        void_layer_id = window_push_layer(&(Layer) {
                 .active = true,
                 .priority = 0,
                 LAYER_ASSIGN(void)
         });
 
-        window_push_layer(&(Layer) {
+        network_layer_id = window_push_layer(&(Layer) {
                 .active = true,
                 .priority = 1,
                 LAYER_ASSIGN(network)
         });
+
 
         DEBUG_UNTRACE();
 }

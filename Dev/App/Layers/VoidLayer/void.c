@@ -1,5 +1,7 @@
 #include "Layers/layers.h"
 
+LayerID void_layer_id;
+
 void void_layer_init(void) {
 } 
 

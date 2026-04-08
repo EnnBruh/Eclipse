@@ -3,14 +3,15 @@
 
 #include "core.h"
 
-#define LAYER_DEFINE(name)                                                      \
+#define LAYER_DEFINE(name)                                                            \
+        extern LayerID EXPAND(JOIN(name, _layer_id));                                 \
         ENNDEF_PRIVATE void EXPAND(JOIN(name, _layer_init))(void);                    \
         ENNDEF_PRIVATE void EXPAND(JOIN(name, _layer_term))(void);                    \
         ENNDEF_PRIVATE void EXPAND(JOIN(name, _layer_on_render))(void);               \
         ENNDEF_PRIVATE void EXPAND(JOIN(name, _layer_on_event))(Event* event);        \
         ENNDEF_PRIVATE void EXPAND(JOIN(name, _layer_on_update))(f64 dt)             
 
-#define LAYER_ASSIGN(name)                                                      \
+#define LAYER_ASSIGN(name)                                                            \
         .init = EXPAND(JOIN(name, _layer_init)),                                      \
         .term = EXPAND(JOIN(name, _layer_term)),                                      \
         .on_render = EXPAND(JOIN(name, _layer_on_render)),                            \

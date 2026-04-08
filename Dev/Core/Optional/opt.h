@@ -65,6 +65,19 @@ typedef struct Layer {
 	void (*on_render)(void);
 } Layer;
 
+ENNDEF_PUBLIC ENN_CMP __layer_compare(Layer a, Layer b) {
+        if (!a.active) return ENN_BIGGER;
+        if (!b.active) return ENN_SMALLER;
+
+        if (a.priority < b.priority) return ENN_BIGGER;
+        if (a.priority > b.priority) return ENN_SMALLER;
+
+        if (a.id < b.id) return ENN_SMALLER;
+        if (a.id > b.id) return ENN_BIGGER;
+        return ENN_EQUAL;
+}
+
+
 /* ---------- Render System ---------- */
 
 #ifndef ENN_SHADERS_PATH
@@ -335,7 +348,8 @@ typedef struct Window {
         ENNDEF_PRIVATE bool 	window_has_vsync(void);
 
         ENNDEF_PRIVATE LayerID  window_push_layer(Layer* layer);
-	ENNDEF_PRIVATE void 	window_remove_layer(LayerID layer);
+        ENNDEF_PRIVATE void     layer_set_active(LayerID id);
+        ENNDEF_PRIVATE void     layer_set_inactive(LayerID id);
 
         ENNDEF_PRIVATE void 	window_set_fullscreen(bool state);
         ENNDEF_PRIVATE void 	window_set_vsync(bool state);

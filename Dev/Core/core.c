@@ -132,6 +132,7 @@ void core_run(void) {
                 glfwMakeContextCurrent(_core_state._window_main.handle);
                 glClearColor(_core_state._window_main.buffer_clear_color.x, _core_state._window_main.buffer_clear_color.y, _core_state._window_main.buffer_clear_color.z, _core_state._window_main.buffer_clear_color.w);
 
+
                 LOG("[Core] All Layers succesfully initialized for window %#" PRIx64 " with name '%s'", _core_state._window_main.id, _core_state._window_main.name);
 
         	_core_state._running = true;
