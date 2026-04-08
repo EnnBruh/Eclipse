@@ -2,6 +2,7 @@
 #define LAYERS_H
 
 #include "core.h"
+#include "Rendering/render.h"
 
 #define LAYER_DEFINE(name)                                                            \
         extern LayerID EXPAND(JOIN(name, _layer_id));                                 \
@@ -21,5 +22,42 @@
 LAYER_DEFINE(void);
 LAYER_DEFINE(debug);
 LAYER_DEFINE(network);
+LAYER_DEFINE(menu);
+
+
+
+typedef enum ENN_NETWORK_LOCALITY {
+        ENN_NETWORK_LOCALHOST,
+        ENN_NETWORK_LAN,
+        ENN_NETWORK_WAN,
+        ENN_NETWORK_UNKNOWN
+} ENN_NETWORK_LOCALITY;
+
+typedef enum ENN_NETWORK_STATUS {
+        ENN_NETWORK_CONNECTED,
+        ENN_NETWORK_DISCONNECTED,
+        ENN_NETWORK_CONNECTING
+} ENN_NETWORK_STATUS;
+
+typedef struct NetworkInformation {
+        u16     LOCALHOST_PORT;
+        char    LOCAL_IP[64];
+
+        u16     PUBLIC_PORT;
+        char    PUBLIC_IP[64];
+} NetworkInformation;
+
+extern struct NetworkState {
+        ENN_NETWORK_LOCALITY    choice;
+        ENN_NETWORK_STATUS      status;
+
+        Socket                  self_sock;
+        NetworkInformation      self_info;
+
+        struct sockaddr_in      friend_address;
+
+        f64                     time_send;
+        f64                     time_recv;
+} net_state;
 
 #endif

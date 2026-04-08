@@ -80,14 +80,14 @@ void core_run(void) {
 		for (i = _core_state._window_arr.start; i < _core_state._window_arr.end; ++i) {
 			for (j = _core_state._window_arr.data[i].layer_stack.start; j < _core_state._window_arr.data[i].layer_stack.end && _core_state._window_arr.data[i].layer_stack.data[j].active; ++j)
 					_core_state._window_arr.data[i].layer_stack.data[j].on_update(_core_state._time_current);
-
+                        
 			if ((_core_state._window_arr.data[i].flags & (1 << ENN_WINDOW_FOCUS_BIT))) {
 				glfwMakeContextCurrent(_core_state._window_arr.data[i].handle);
 				glClear(GL_COLOR_BUFFER_BIT);
 
 				for (j = _core_state._window_arr.data[i].layer_stack.start; j < _core_state._window_arr.data[i].layer_stack.end && _core_state._window_arr.data[i].layer_stack.data[j].active; ++j)
                                         _core_state._window_arr.data[i].layer_stack.data[j].on_render();
-
+                                
 				glfwSwapBuffers(_core_state._window_arr.data[i].handle);
 			}
 		}

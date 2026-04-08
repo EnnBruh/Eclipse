@@ -17,6 +17,12 @@ void app_init(void) {
                 LAYER_ASSIGN(void)
         });
 
+        debug_layer_id = window_push_layer(&(Layer) {
+                .active = true,
+                .priority = 100,
+                LAYER_ASSIGN(debug)
+        });
+
         network_layer_id = window_push_layer(&(Layer) {
                 .active = true,
                 .priority = 1,

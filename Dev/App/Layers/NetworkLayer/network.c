@@ -2,6 +2,8 @@
 
 LayerID network_layer_id;
 
+struct NetworkState net_state;
+
 void network_layer_init(void) {
         LOG("[Network] Layer test");
 }
