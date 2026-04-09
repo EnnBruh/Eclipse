@@ -12,7 +12,7 @@ void menu_layer_on_render(void) {
         render_rectangle_push(
                 (f32vec2) { -1.0, 1.0 },
                 (f32vec2) { 1.0, -1.0 },
-                0xFFFFFFFF);
+                0xFF0000FF);
 }
 
 void menu_layer_on_update(f64 dt) {

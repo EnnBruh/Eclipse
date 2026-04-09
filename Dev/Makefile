@@ -36,25 +36,22 @@ CORE_OBJS = $(CORE_SRC:.c=.o)
 CORE_LIB = $(CORE_DIR)/core.a
 AR = ar
 ARFLAGS = rcs
-build_core_lib: $(CORE_OBJS)
+$(CORE_LIB): $(CORE_OBJS)
 	$(AR) $(ARFLAGS) $(CORE_LIB) $^
-	rm $^
-	
 
 
 ALL_SRC = $(DEP_SRC) $(APP_SRC)
 ALL_INC = -iquote $(DEP_INC) -iquote $(CORE_INC) -iquote $(APP_INC)
-ALL_LIB = $(CORE_LIB) $(DEP_LIB)
+# ALL_LIB = $(CORE_LIB) $(DEP_LIB)
 
-build_debug: build_core_lib
-	$(CC) $(CFLAGS) -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(ALL_LIB)
-	rm $(CORE_LIB)
+build_debug: $(CORE_LIB)
+	$(CC) $(CFLAGS) -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(CORE_LIB) $(DEP_LIB)
 
-build_release: build_core_lib
-	$(CC) $(CFLAGS) -O3 -mwindows -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(ALL_LIB)
+build_release: $(CORE_LIB) 
+	$(CC) $(CFLAGS) -O3 -mwindows -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(CORE_LIB) $(DEP_LIB)
 
 build_preproc:
 	$(CC) $(CFLAGS) -E $(ALL_INC) $(ALL_SRC) $(ALL_LIB) > preproc.c
 
-clean: $(CORE_OBJS)
+clean: $(CORE_LIB) $(CORE_OBJS)
 	rm $^
