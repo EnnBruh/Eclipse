@@ -4,11 +4,12 @@ bool network_init() {
         DEBUG_TRACE();
 #       if ENN_PLATFORM == ENN_WINDOWS
                 WSADATA wsa;
+                DEBUG_UNTRACE();
                 return WSAStartup(MAKEWORD(2, 2), &wsa) == 0;
 #       else
+                DEBUG_UNTRACE();
                 return true;
 #       endif
-        DEBUG_UNTRACE();
 }
 
 void network_term() {

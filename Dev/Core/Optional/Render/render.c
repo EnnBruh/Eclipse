@@ -1,3 +1,5 @@
+#define ENN_DEBUG_MEMORY_IMPL
+#define STB_IMAGE_IMPLEMENTATION
 #include "Optional/opt_internal.h"
 
 ShaderID render_shader_compile(const char* vertex_shader_filename, const char* fragment_shader_filename) {
@@ -101,7 +103,7 @@ void render_image_create(Image* img) {
 
 void render_image_destroy(Image* img) {
 	DEBUG_TRACE();
-        free(img -> data);
+        stbi_image_free(img -> data);
         memset(img, 0x0, (sizeof (Image)));
 	DEBUG_UNTRACE();
 }

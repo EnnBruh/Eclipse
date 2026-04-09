@@ -9,26 +9,31 @@ typedef struct Vertex {
 
 #define ENN_RENDER_VERTEX_BUFF_SIZE 16384
 
-typedef struct Renderer {
-        Vertex          buff[ENN_RENDER_VERTEX_BUFF_SIZE];
-        i32             buff_size;
+typedef GLint UniformLocation;
+
+extern struct Renderer {
+        Vertex          buff[2][ENN_RENDER_VERTEX_BUFF_SIZE];
+        i32             buff_size[2];
 
         VAOID           vao;
         VBOID           vbo;
         ShaderID        shader;
 
-        TextureID       texture_atlas;
-} Renderer;
+        UniformLocation proj_matrix_location;
+
+        TextureID       sprite_sheet;
+        TextureID       font_atlas;
+} global_render;
 
 typedef struct Sprite {
         f32vec2 texture_pos;
 } Sprite;
 
-extern Renderer sprite_render;
-extern Renderer text_render;
-
 ENNDEF_PRIVATE void render_init(void);
 ENNDEF_PRIVATE void render_term(void);
+ENNDEF_PRIVATE void render_buff_draw(void);
+
+// ENNDEF_PRIVATE void render_proj_set(const f32* proj_matrix);
 
 ENNDEF_PRIVATE void render_rectangle_push(f32vec2 top_left, f32vec2 bott_right, u32 color);
 ENNDEF_PRIVATE void render_line_push(f32vec2 pos1, f32vec2 pos2, f32 width, u32 color);
@@ -56,9 +61,5 @@ typedef struct TextSpecification {
         bool                    text_box_border;
 } TextSpecification;
 
-#       ifndef ENN_FONT_ESCAPE_CHARACTER
-#              define ENN_FONT_ESCAPE_CHARACTER '$'
-#       endif
 ENNDEF_PRIVATE void render_text_push(f32vec2 top_left, f32vec2 bott_right, const char* text, TextSpecification* specification);
 
-ENNDEF_PRIVATE void render_buff_draw(void);

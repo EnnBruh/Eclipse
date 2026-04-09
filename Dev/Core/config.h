@@ -18,7 +18,7 @@
 //   #define ENN_LOG_TIME_FORMAT "[%H:%M:%S]: "
 
 //   #define ENN_MAX_LOG_BUFF_SIZE 2048
-//   #define ENN_MAX_CALLSTACK_SIZE 12
+  #define ENN_MAX_CALLSTACK_SIZE 64
 
 //   #define ENN_VECTOR_IMPL
 //   #define ENN_DEQUE_IMPL

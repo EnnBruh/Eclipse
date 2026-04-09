@@ -5,6 +5,8 @@ void app_init(void) {
         DEBUG_TRACE();
         core_init();
 
+
+
         window_create(&(WindowSpecification) {
                 .width = 800,
                 .height = 600,
@@ -29,6 +31,13 @@ void app_init(void) {
                 LAYER_ASSIGN(network)
         });
 
+        menu_layer_id = window_push_layer(&(Layer) {
+                .active = true,
+                .priority = 2,
+                LAYER_ASSIGN(menu)
+        });
+
+        render_init();
 
         DEBUG_UNTRACE();
 }
@@ -41,6 +50,7 @@ void app_run(void) {
 
 void app_term(void) {
         DEBUG_TRACE();
+        render_term();
         core_term();
         DEBUG_UNTRACE();
 }
