@@ -10,8 +10,8 @@ void menu_layer_term(void) {
 
 void menu_layer_on_render(void) {
         render_rectangle_push(
-                (f32vec2) { -0.5, 0.5 },
-                (f32vec2) { 0.5, -0.5 },
+                (f32vec2) { -1.0, 1.0 },
+                (f32vec2) { 1.0, -1.0 },
                 0xFFFFFFFF);
 }
 
