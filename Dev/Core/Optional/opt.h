@@ -398,6 +398,7 @@ typedef struct Window {
 
 ENNDEF_PRIVATE bool     network_init();
 ENNDEF_PRIVATE void     network_term();
+ENNDEF_PRIVATE void     network_socket_close(Socket sock);
 
 #ifdef __cplusplus
 	}

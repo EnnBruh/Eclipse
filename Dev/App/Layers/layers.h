@@ -40,7 +40,7 @@ typedef enum ENN_NETWORK_STATUS {
 } ENN_NETWORK_STATUS;
 
 typedef struct NetworkInformation {
-        u16     LOCALHOST_PORT;
+        u16     LOCAL_PORT;
         char    LOCAL_IP[64];
 
         u16     PUBLIC_PORT;

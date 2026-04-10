@@ -19,3 +19,13 @@ void network_term() {
 #       endif
         DEBUG_UNTRACE();
 }
+
+void network_socket_close(Socket sock) {
+        DEBUG_TRACE();
+#       if ENN_PLATFORM == ENN_WINDOWS
+                closesocket(sock);
+#       else
+                close(sock);
+#       endif
+        DEBUG_UNTRACE();
+}
