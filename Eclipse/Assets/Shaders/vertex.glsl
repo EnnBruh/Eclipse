@@ -10,7 +10,7 @@ out vec2 m_texture_pos;
 uniform mat4 projection;
 
 void main() {
-        gl_Position = vec4(pos, 1.0, 1.0);
-        m_color = color;
+        gl_Position = projection * vec4(pos, 1.0, 1.0);
+        m_color = vec4(color.w, color.z, color.y, color.x);
         m_texture_pos = texture_pos;
 }

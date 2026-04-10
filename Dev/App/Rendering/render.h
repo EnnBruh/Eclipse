@@ -21,25 +21,32 @@ extern struct Renderer {
 
         UniformLocation proj_matrix_location;
 
-        TextureID       sprite_sheet;
-        TextureID       font_atlas;
+        TextureID       sprite_sheet_id;
+        TextureID       font_atlas_id;
+
+        Image           sprite_sheet;
+        Image           font_atlas;
 } global_render;
 
 typedef struct Sprite {
-        f32vec2 texture_pos;
+        Image*  img;
+        f32vec2 texture_top_left;
+        f32vec2 texture_bott_right;
 } Sprite;
 
 ENNDEF_PRIVATE void render_init(void);
 ENNDEF_PRIVATE void render_term(void);
 ENNDEF_PRIVATE void render_buff_draw(void);
 
-// ENNDEF_PRIVATE void render_proj_set(const f32* proj_matrix);
+typedef f32 mat4[16];
+typedef f32 mat3[9];
+typedef f32 mat2[4];
+ENNDEF_PRIVATE void render_proj_set(const f32* proj_matrix);
 
 ENNDEF_PRIVATE void render_rectangle_push(f32vec2 top_left, f32vec2 bott_right, u32 color);
 ENNDEF_PRIVATE void render_line_push(f32vec2 pos1, f32vec2 pos2, f32 width, u32 color);
-ENNDEF_PRIVATE void render_sprite_push_4(f32vec2 top_left, f32vec2 bott_right, Sprite sprite, u32 color);
-ENNDEF_PRIVATE void render_sprite_push_3(f32vec2 top_left, f32vec2 bott_right, Sprite sprite);
-#define render_sprite_push(...) EXPAND(JOIN(render_sprite_push_, GET_NUM_ARGS(__VA_ARGS__)))(__VA_ARGS__)
+ENNDEF_PRIVATE void render_sprite_push_color(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite, u32 color);
+ENNDEF_PRIVATE void render_sprite_push(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite);
 
 
 typedef enum ENN_TEXT_ALIGN {

@@ -115,7 +115,7 @@ void render_image_read_2(Image* img, const char* filepath) {
 
         stbi_set_flip_vertically_on_load(false);
         img -> data = stbi_load(filepath, &img -> width, &img -> height, &img -> channels, 0);
-        if (img -> data == NULL) LOG_WARN("Could not read image at '%s'", filepath);
+        if (img -> data == NULL) LOG_WARN("[Render] Could not read image at '%s'", filepath);
 	DEBUG_UNTRACE();
 }
 
@@ -126,13 +126,13 @@ void render_image_read_3(Image* img, const char* filepath, bool flip_vertical) {
 
         stbi_set_flip_vertically_on_load(flip_vertical);
         img -> data = stbi_load(filepath, &img -> width, &img -> height, &img -> channels, 0);
-        if (img -> data == NULL) LOG_WARN("Could not read image at '%s'", filepath);
+        if (img -> data == NULL) LOG_WARN("[Render] Could not read image at '%s'", filepath);
 	DEBUG_UNTRACE();
 }
 
 static u32 _internal_unknown_texture[] = {
-        0x00000000, 0xFF00FF00,
-        0xFF00FF00, 0x00000000
+        0x000000FF, 0xFF00FFFF,
+        0xFF00FFFF, 0x000000FF
 };
 
 
@@ -150,11 +150,15 @@ TextureID render_texture_create_image(Image* img, ENN_WRAP_ALGORITHM wrap_algo, 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_algo);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_algo);
 
-                if (img -> channels == 4)
+                if (img -> channels == 4) {
+                        DEBUG_LOG("[Render] Using RGBA Format for texture");
                         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img -> width, img -> height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img -> data);
-                else if (img -> channels == 3)
+                } else if (img -> channels == 3) {
+                        DEBUG_LOG("[Render] Using RGB Format for texture");
                         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img -> width, img -> height, 0, GL_RGB, GL_UNSIGNED_BYTE, img -> data);
+                }
         } else {
+                DEBUG_LOG("[Render] No texture data found. Using UNKNOWN Texture");
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ENN_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ENN_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ENN_REPEAT);
@@ -189,11 +193,15 @@ TextureID render_texture_create_file(const char* filename, ENN_WRAP_ALGORITHM wr
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_algo);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_algo);
 
-                if (img.channels == 4)
+                if (img.channels == 4) {
+                        DEBUG_LOG("[Render] Using RGBA Format for texture at %s", filename);
                         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width, img.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data);
-                else if (img.channels == 3)
+                } else if (img.channels == 3) {
+                        DEBUG_LOG("[Render] Using RGB Format for texture at %s", filename);
                         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.width, img.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img.data);
+                }
         } else {
+                DEBUG_LOG("[Render] No texture data found. Using UNKNOWN Texture");
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ENN_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ENN_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ENN_REPEAT);

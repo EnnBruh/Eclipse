@@ -32,9 +32,15 @@ void app_init(void) {
         });
 
         menu_layer_id = window_push_layer(&(Layer) {
-                .active = true,
+                .active = false,
                 .priority = 2,
                 LAYER_ASSIGN(menu)
+        });
+
+        game_layer_id = window_push_layer(&(Layer) {
+                .active = true,
+                .priority = 2,
+                LAYER_ASSIGN(game)
         });
 
         render_init();

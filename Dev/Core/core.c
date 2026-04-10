@@ -145,7 +145,7 @@ void core_run(void) {
         		last_frame = _core_state._time_current;
 
                         for (i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end && _core_state._window_main.layer_stack.data[i].active; ++i)
-                                        _core_state._window_main.layer_stack.data[i].on_update(_core_state._time_current);
+                                        _core_state._window_main.layer_stack.data[i].on_update(_core_state._time_delta);
 
                         if ((_core_state._window_main.flags & (1 << ENN_WINDOW_FOCUS_BIT))) {
                                 glClear(GL_COLOR_BUFFER_BIT);

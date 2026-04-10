@@ -23,6 +23,7 @@ LAYER_DEFINE(void);
 LAYER_DEFINE(debug);
 LAYER_DEFINE(network);
 LAYER_DEFINE(menu);
+LAYER_DEFINE(game);
 
 
 
