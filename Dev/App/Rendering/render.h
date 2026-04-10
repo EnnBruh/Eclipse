@@ -38,6 +38,8 @@ ENNDEF_PRIVATE void render_init(void);
 ENNDEF_PRIVATE void render_term(void);
 ENNDEF_PRIVATE void render_buff_draw(void);
 
+ENNDEF_PRIVATE Sprite render_sprite_create(Image* texture, i32vec2 texture_top_left, i32vec2 texture_bott_right);
+
 typedef f32 mat4[16];
 typedef f32 mat3[9];
 typedef f32 mat2[4];

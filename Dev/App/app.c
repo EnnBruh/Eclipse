@@ -5,13 +5,13 @@ void app_init(void) {
         DEBUG_TRACE();
         core_init();
 
-
-
         window_create(&(WindowSpecification) {
                 .width = 800,
                 .height = 600,
                 .is_resizable = true
         });
+
+        render_init();
 
         void_layer_id = window_push_layer(&(Layer) {
                 .active = true,
@@ -43,7 +43,6 @@ void app_init(void) {
                 LAYER_ASSIGN(game)
         });
 
-        render_init();
 
         DEBUG_UNTRACE();
 }

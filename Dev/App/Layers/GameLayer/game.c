@@ -6,11 +6,13 @@ Sprite shadow_player_idle[5];
 i32 idle_anim_index;
 
 void game_layer_init(void) {
-        shadow_player_idle[0] = (Sprite) { &global_render.sprite_sheet, (f32vec2) { 0, 16 },   (f32vec2) { 31, 63 } };
-        shadow_player_idle[1] = (Sprite) { &global_render.sprite_sheet, (f32vec2) { 32, 16 },  (f32vec2) { 63, 63 } };
-        shadow_player_idle[2] = (Sprite) { &global_render.sprite_sheet, (f32vec2) { 64, 16 },  (f32vec2) { 95, 63 } };
-        shadow_player_idle[3] = (Sprite) { &global_render.sprite_sheet, (f32vec2) { 96, 16 },  (f32vec2) { 127, 63 } };
-        shadow_player_idle[4] = (Sprite) { &global_render.sprite_sheet, (f32vec2) { 128, 16 }, (f32vec2) { 159, 63 } };
+        shadow_player_idle[0] = render_sprite_create(&global_render.sprite_sheet, (i32vec2) { 0, 16 },   (i32vec2) { 32, 64 });
+        shadow_player_idle[1] = render_sprite_create(&global_render.sprite_sheet, (i32vec2) { 32, 16 },  (i32vec2) { 64, 64 });
+        shadow_player_idle[2] = render_sprite_create(&global_render.sprite_sheet, (i32vec2) { 64, 16 },  (i32vec2) { 96, 64 });
+        shadow_player_idle[3] = render_sprite_create(&global_render.sprite_sheet, (i32vec2) { 96, 16 },  (i32vec2) { 128, 64 });
+        shadow_player_idle[4] = render_sprite_create(&global_render.sprite_sheet, (i32vec2) { 128, 16 }, (i32vec2) { 160, 64 });
+
+        // LOG("%f %f %f %f", shadow_player_idle[0].texture_top_left.x, shadow_player_idle[0].texture_top_left.y, shadow_player_idle[0].texture_bott_right.x, shadow_player_idle[0].texture_bott_right.y);
 }
 
 void game_layer_term(void) {
@@ -36,10 +38,10 @@ void game_layer_on_render(void) {
                 (f32vec2) { 1.0, -1.0 },
                 0xFF000080);
 
-        render_sprite_push_color(
-                ((f32vec2) { -0.1, 0.2 }),
+        render_sprite_push(
+                ((f32vec2) { -0.1, 0.1}),
                 ((f32vec2) { 0.1, -0.2}),
-                &shadow_player_idle[idle_anim_index], 0xFF0000FF);
+                &shadow_player_idle[idle_anim_index]);
 }
 
 void game_layer_on_update(f64 dt) {

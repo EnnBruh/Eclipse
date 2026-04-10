@@ -88,6 +88,23 @@ void render_buff_draw(void) {
         DEBUG_UNTRACE();
 }
 
+Sprite render_sprite_create(Image* texture, i32vec2 texture_top_left, i32vec2 texture_bott_right) {
+        DEBUG_ASSERT(texture != NULL);
+        // LOG("%" PRIi32 " %" PRIi32 " %" PRIi32 " %" PRIi32, texture_top_left.x, texture_top_left.y, texture_bott_right.x, texture_bott_right.y);
+        // LOG("%" PRIi32  " %" PRIi32, texture -> width, texture -> height);
+        return (Sprite) {
+                .img = texture,
+                .texture_top_left = (f32vec2) {
+                        .x = (f32)texture_top_left.x / (f32)texture -> width,
+                        .y = (f32)texture_top_left.y / (f32)texture -> height
+                },
+                .texture_bott_right = (f32vec2) {
+                        .x = (f32)texture_bott_right.x / (f32)texture -> width,
+                        .y = (f32)texture_bott_right.y / (f32)texture -> height
+                }
+        };
+}
+
 void render_proj_set(const f32* proj_matrix) {
         DEBUG_TRACE();
         if (global_render.buff_size[0] > 0 || global_render.buff_size[1] > 0) 
@@ -124,31 +141,21 @@ void render_sprite_push_color(f32vec2 top_left, f32vec2 bott_right, Sprite* spri
 
         Vertex* vert = &(global_render.buff[0][global_render.buff_size[0]]);
 
-        f32vec2 tex_top_left = {
-                .x = sprite -> texture_top_left.x / sprite -> img -> width,
-                .y = sprite -> texture_top_left.y / sprite -> img -> height
-        };
+        vert[0].pos = top_left; vert[0].color = color; vert[0].texture_pos = sprite -> texture_top_left;
 
-        f32vec2 tex_bott_right = {
-                .x = sprite -> texture_bott_right.x / sprite -> img -> width,
-                .y = sprite -> texture_bott_right.y / sprite -> img -> height
-        };
+        vert[1].pos.x = top_left.x; vert[1].color = color; vert[1].texture_pos.x = sprite -> texture_top_left.x;
+        vert[1].pos.y = bott_right.y;                      vert[1].texture_pos.y = sprite -> texture_bott_right.y;
 
-        vert[0].pos = top_left; vert[0].color = color; vert[0].texture_pos = tex_top_left;
+        vert[2].pos.x = bott_right.x; vert[2].color = color; vert[2].texture_pos.x = sprite -> texture_bott_right.x;
+        vert[2].pos.y = top_left.y;                          vert[2].texture_pos.y = sprite -> texture_top_left.y;
 
-        vert[1].pos.x = top_left.x; vert[1].color = color; vert[1].texture_pos.x = tex_top_left.x;
-        vert[1].pos.y = bott_right.y;                         ; vert[1].texture_pos.y = tex_bott_right.y;
+        vert[3].pos.x = bott_right.x; vert[3].color = color; vert[3].texture_pos.x = sprite -> texture_bott_right.x;
+        vert[3].pos.y = top_left.y;                          vert[3].texture_pos.y = sprite -> texture_top_left.y;
 
-        vert[2].pos.x = bott_right.x; vert[2].color = color; vert[2].texture_pos.x = tex_bott_right.x;
-        vert[2].pos.y = top_left.y;                               vert[2].texture_pos.y = tex_top_left.y;
+        vert[4].pos.x = top_left.x; vert[4].color = color; vert[4].texture_pos.x = sprite -> texture_top_left.x;
+        vert[4].pos.y = bott_right.y;                      vert[4].texture_pos.y = sprite -> texture_bott_right.y;
 
-        vert[3].pos.x = bott_right.x; vert[3].color = color; vert[3].texture_pos.x = tex_bott_right.x;
-        vert[3].pos.y = top_left.y;                               vert[3].texture_pos.y = tex_top_left.y;
-
-        vert[4].pos.x = top_left.x; vert[4].color = color; vert[4].texture_pos.x = tex_top_left.x;
-        vert[4].pos.y = bott_right.y;                           vert[4].texture_pos.y = tex_bott_right.y;
-
-        vert[5].pos = bott_right; vert[5].color = color; vert[5].texture_pos = tex_bott_right;
+        vert[5].pos = bott_right; vert[5].color = color; vert[5].texture_pos = sprite -> texture_bott_right;
 
         global_render.buff_size[0] += 6;
         DEBUG_UNTRACE();
@@ -161,31 +168,22 @@ void render_sprite_push(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite) {
 
         Vertex* vert = &(global_render.buff[0][global_render.buff_size[0]]);
 
-        f32vec2 tex_top_left = {
-                .x = sprite -> texture_top_left.x / sprite -> img -> width,
-                .y = sprite -> texture_top_left.y / sprite -> img -> height
-        };
+        vert[0].pos = top_left; vert[0].color = 0xFFFFFFFF; vert[0].texture_pos = sprite -> texture_top_left;
 
-        f32vec2 tex_bott_right = {
-                .x = sprite -> texture_bott_right.x / sprite -> img -> width,
-                .y = sprite -> texture_bott_right.y / sprite -> img -> height
-        };
+        vert[1].pos.x = top_left.x; vert[1].color = 0xFFFFFFFF; vert[1].texture_pos.x = sprite -> texture_top_left.x;
+        vert[1].pos.y = bott_right.y;                           vert[1].texture_pos.y = sprite -> texture_bott_right.y;
 
-        vert[0].pos = top_left; vert[0].color = 0xFFFFFFFF; vert[0].texture_pos = tex_top_left;
+        vert[2].pos.x = bott_right.x; vert[2].color = 0xFFFFFFFF; vert[2].texture_pos.x = sprite -> texture_bott_right.x;
+        vert[2].pos.y = top_left.y;                               vert[2].texture_pos.y = sprite -> texture_top_left.y;
 
-        vert[1].pos.x = top_left.x; vert[1].color = 0xFFFFFFFF; vert[1].texture_pos.x = tex_top_left.x;
-        vert[1].pos.y = bott_right.y;                         ; vert[1].texture_pos.y = tex_bott_right.y;
+        vert[3].pos.x = bott_right.x; vert[3].color = 0xFFFFFFFF; vert[3].texture_pos.x = sprite -> texture_bott_right.x;
+        vert[3].pos.y = top_left.y;                               vert[3].texture_pos.y = sprite -> texture_top_left.y;
 
-        vert[2].pos.x = bott_right.x; vert[2].color = 0xFFFFFFFF; vert[2].texture_pos.x = tex_bott_right.x;
-        vert[2].pos.y = top_left.y;                               vert[2].texture_pos.y = tex_top_left.y;
+        vert[4].pos.x = top_left.x; vert[4].color = 0xFFFFFFFF; vert[4].texture_pos.x = sprite -> texture_top_left.x;
+        vert[4].pos.y = bott_right.y;                           vert[4].texture_pos.y = sprite -> texture_bott_right.y;
 
-        vert[3].pos.x = bott_right.x; vert[3].color = 0xFFFFFFFF; vert[3].texture_pos.x = tex_bott_right.x;
-        vert[3].pos.y = top_left.y;                               vert[3].texture_pos.y = tex_top_left.y;
+        vert[5].pos = bott_right; vert[5].color = 0xFFFFFFFF; vert[5].texture_pos = sprite -> texture_bott_right;
 
-        vert[4].pos.x = top_left.x; vert[4].color = 0xFFFFFFFF; vert[4].texture_pos.x = tex_top_left.x;
-        vert[4].pos.y = bott_right.y;                           vert[4].texture_pos.y = tex_bott_right.y;
-
-        vert[5].pos = bott_right; vert[5].color = 0xFFFFFFFF; vert[5].texture_pos = tex_bott_right;
 
         global_render.buff_size[0] += 6;
         DEBUG_UNTRACE();
