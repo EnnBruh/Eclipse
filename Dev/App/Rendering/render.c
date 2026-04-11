@@ -188,3 +188,11 @@ void render_sprite_push(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite) {
         global_render.buff_size[0] += 6;
         DEBUG_UNTRACE();
 }
+
+void render_sprite_flip_vertical(Sprite* sprite) {
+        swap(sprite -> texture_top_left.x, sprite -> texture_bott_right.x);
+}
+
+void render_sprite_flip_horizontal(Sprite* sprite) {
+        swap(sprite -> texture_top_left.y, sprite -> texture_bott_right.y);
+}

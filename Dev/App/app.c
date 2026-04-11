@@ -6,8 +6,8 @@ void app_init(void) {
         core_init();
 
         window_create(&(WindowSpecification) {
-                .width = 800,
-                .height = 600,
+                .width = 1280,
+                .height = 720,
                 .is_resizable = true
         });
 

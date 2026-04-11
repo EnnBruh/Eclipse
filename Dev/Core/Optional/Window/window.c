@@ -708,6 +708,7 @@ void window_destroy(void) {
         for (i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end; ++i)
                 _core_state._window_main.layer_stack.data[i].term();
 
+        vector_destroy(_core_state._window_main.layer_stack);
         LOG("[Core] All Layers terminated for window %#" PRIx64 " with name '%s'", _core_state._window_main.id, _core_state._window_main.name);
 
         glfwDestroyWindow(_core_state._window_main.handle);

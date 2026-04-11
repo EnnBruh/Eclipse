@@ -1,3 +1,6 @@
+#ifndef ENN_CUSTOM_RENDER_H
+#define ENN_CUSTOM_RENDER_H
+
 #include "core.h"
 
 typedef struct Vertex {
@@ -49,6 +52,8 @@ ENNDEF_PRIVATE void render_rectangle_push(f32vec2 top_left, f32vec2 bott_right, 
 ENNDEF_PRIVATE void render_line_push(f32vec2 pos1, f32vec2 pos2, f32 width, u32 color);
 ENNDEF_PRIVATE void render_sprite_push_color(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite, u32 color);
 ENNDEF_PRIVATE void render_sprite_push(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite);
+ENNDEF_PRIVATE void render_sprite_flip_horizontal(Sprite* sprite);
+ENNDEF_PRIVATE void render_sprite_flip_vertical(Sprite* sprite);
 
 
 typedef enum ENN_TEXT_ALIGN {
@@ -72,3 +77,5 @@ typedef struct TextSpecification {
 
 ENNDEF_PRIVATE void render_text_push(f32vec2 top_left, f32vec2 bott_right, const char* text, TextSpecification* specification);
 
+
+#endif
