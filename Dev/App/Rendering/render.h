@@ -14,6 +14,8 @@ typedef struct Vertex {
 
 typedef GLint UniformLocation;
 
+#define ENN_FONT_ATLAS_FIRST_CHAR ' '
+#define ENN_FONT_ATLAS_LAST_CHAR '~'
 extern struct Renderer {
         Vertex          buff[2][ENN_RENDER_VERTEX_BUFF_SIZE];
         i32             buff_size[2];
@@ -29,6 +31,10 @@ extern struct Renderer {
 
         Image           sprite_sheet;
         Image           font_atlas;
+
+
+        i32vec2         font_char_dim;
+        f32vec4         char_texture_pos[ENN_FONT_ATLAS_LAST_CHAR - ENN_FONT_ATLAS_FIRST_CHAR];
 } global_render;
 
 typedef struct Sprite {

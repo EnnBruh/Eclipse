@@ -27,14 +27,17 @@ void render_init(void) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        render_image_read(&global_render.sprite_sheet, ENN_APP_DIRECTORY ENN_TEXTURES_PATH "spritesheet.png", false);
-        render_image_read(&global_render.font_atlas, ENN_APP_DIRECTORY ENN_TEXTURES_PATH "font_atlas.png", false);
-
+        render_image_read(&global_render.sprite_sheet, ENN_APP_DIRECTORY ENN_TEXTURES_PATH "spritesheet.png", !ENN_IMAGE_FLIP);
         global_render.sprite_sheet_id = render_texture_create_image(&global_render.sprite_sheet, ENN_CLAMP_TO_EDGES, ENN_NEAREST);
-        global_render.font_atlas_id   = render_texture_create_image(&global_render.font_atlas, ENN_CLAMP_TO_EDGES, ENN_NEAREST);
-
         stbi_image_free(global_render.sprite_sheet.data);
-        stbi_image_free(global_render.font_atlas.data);
+
+        render_image_read(&global_render.font_atlas, ENN_APP_DIRECTORY ENN_FONTS_PATH "font_atlas.png", !ENN_IMAGE_FLIP);
+        global_render.font_char_dim = (i32vec2) {
+                .x = 8, .y = 16
+        };
+
+        for (char ch = ENN_FONT_ATLAS_FIRST_CHAR; ch <= ENN_FONT_ATLAS_LAST_CHAR; ++ch) {
+        }
 
         glUniform1i(glGetUniformLocation(global_render.shader, "sprite_sheet"), 0);
         glUniform1i(glGetUniformLocation(global_render.shader, "font_atlas"), 1);
@@ -190,9 +193,13 @@ void render_sprite_push(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite) {
 }
 
 void render_sprite_flip_vertical(Sprite* sprite) {
+        DEBUG_TRACE();
         swap(sprite -> texture_top_left.x, sprite -> texture_bott_right.x);
+        DEBUG_UNTRACE();
 }
 
 void render_sprite_flip_horizontal(Sprite* sprite) {
+        DEBUG_TRACE();
         swap(sprite -> texture_top_left.y, sprite -> texture_bott_right.y);
+        DEBUG_UNTRACE();
 }
