@@ -17,8 +17,8 @@ typedef GLint UniformLocation;
 #define ENN_FONT_ATLAS_FIRST_CHAR ' '
 #define ENN_FONT_ATLAS_LAST_CHAR '~'
 extern struct Renderer {
-        Vertex          buff[2][ENN_RENDER_VERTEX_BUFF_SIZE];
-        i32             buff_size[2];
+        Vertex          buff[ENN_RENDER_VERTEX_BUFF_SIZE];
+        i32             buff_size;
 
         VAOID           vao;
         VBOID           vbo;
@@ -27,14 +27,15 @@ extern struct Renderer {
         UniformLocation proj_matrix_location;
 
         TextureID       sprite_sheet_id;
-        TextureID       font_atlas_id;
-
         Image           sprite_sheet;
-        Image           font_atlas;
 
-
-        i32vec2         font_char_dim;
-        f32vec4         char_texture_pos[ENN_FONT_ATLAS_LAST_CHAR - ENN_FONT_ATLAS_FIRST_CHAR];
+        struct {
+                i32vec2 font_offset;
+                i32vec2 char_dim;
+                i32vec2 font_dim;
+                i32     char_per_col;
+                f32vec4 char_sprite[ENN_FONT_ATLAS_LAST_CHAR - ENN_FONT_ATLAS_FIRST_CHAR];
+        } font_atlas;
 } global_render;
 
 typedef struct Sprite {
@@ -81,7 +82,8 @@ typedef struct TextSpecification {
         bool                    text_box_border;
 } TextSpecification;
 
-ENNDEF_PRIVATE void render_text_push(f32vec2 top_left, f32vec2 bott_right, const char* text, TextSpecification* specification);
+// ENNDEF_PRIVATE void render_text_push(f32vec2 top_left, f32vec2 bott_right, const char* text, TextSpecification* specification);
+ENNDEF_PRIVATE void render_text_push(f32vec2 top_left, const char* text, u32 color, f32 text_height);
 
 
 #endif

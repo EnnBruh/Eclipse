@@ -27,13 +27,8 @@ void game_layer_term(void) {
 }
 
 
+char fps_buff[16];
 void game_layer_on_render(void) {
-        // render_proj_set((mat4) {
-        //         1, 0, 0, 0,
-        //         0, 1, 0, 0,
-        //         0, 0, 1, 0,
-        //         0, 0, 0, 1
-        // });
 
         // render_rectangle_push(
         //         (f32vec2) { -1.0, 1.0 },
@@ -53,11 +48,28 @@ void game_layer_on_render(void) {
         });
         
         render_sprite_push(
-                (f32vec2) { -80, -70 },
-                (f32vec2) { 80, 20 },
+                (f32vec2) { -80, -40 },
+                (f32vec2) { 80, 50 },
                 &background);
         
+        
         player_render_shadow();
+
+        // render_rectangle_push(
+        //         (f32vec2) { -1.0, 1.0 },
+        //         (f32vec2) { 1.0, -1.0 },
+        //         0xFFFFFFFF);
+
+        render_proj_set((mat4) {
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+        });
+
+        render_text_push(
+                (f32vec2) { -0.95, 0.85 },
+                fps_buff, 0xFFFFFFFF, 0.1);
 
 }
 
@@ -66,6 +78,7 @@ void game_layer_on_render(void) {
 #define ENN_PLAYER_JUMP_FORCE 15.0
 
 void game_layer_on_update(f64 dt) {
+        sprintf(fps_buff, "%" PRIi32 " FPS", (i32)(1.0 / dt));
         // LOG("FrameTime = %lf FPS = %lf", dt, 1.0 / dt);
 
         if (is_key_down[GLFW_KEY_D]) Shadow.velocity.x = ENN_PLAYER_RUN_SPEED;
@@ -88,8 +101,8 @@ void game_layer_on_update(f64 dt) {
                 .y = Shadow.pos.y + Shadow.velocity.y * dt
         };
 
-        if (new_pos.y > 10.0) {
-                new_pos.y = 10.0, Shadow.velocity.y = 0.0;
+        if (new_pos.y > 20.0) {
+                new_pos.y = 20.0, Shadow.velocity.y = 0.0;
                 Shadow.flags |= (1 << ENN_PLAYER_ON_GROUND_BIT);
         }
         

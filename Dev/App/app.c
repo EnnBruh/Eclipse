@@ -8,7 +8,9 @@ void app_init(void) {
         window_create(&(WindowSpecification) {
                 .width = 1280,
                 .height = 720,
-                .is_resizable = true
+                .is_resizable = true,
+                .has_vsync = true
+
         });
 
         render_init();
