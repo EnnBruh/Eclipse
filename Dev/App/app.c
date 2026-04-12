@@ -9,6 +9,7 @@ void app_init(void) {
                 .width = 1280,
                 .height = 720,
                 .is_resizable = true,
+                .name = "Eclipse"
                 // .has_vsync = true
 
         });

@@ -45,10 +45,10 @@ ALL_INC = -iquote $(DEP_INC) -iquote $(CORE_INC) -iquote $(APP_INC)
 # ALL_LIB = $(CORE_LIB) $(DEP_LIB)
 
 build_debug: $(CORE_LIB)
-	$(CC) $(CFLAGS) -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(CORE_LIB) $(DEP_LIB)
+	$(CC) $(CFLAGS) -static -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(CORE_LIB) $(DEP_LIB)
 
 build_release: $(CORE_LIB) 
-	$(CC) $(CFLAGS) -O3 -mwindows -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(CORE_LIB) $(DEP_LIB)
+	$(CC) $(CFLAGS) -O0 -mwindows -static -o $(TARGET) $(ALL_INC) $(ALL_SRC) $(CORE_LIB) $(DEP_LIB)
 
 build_preproc:
 	$(CC) $(CFLAGS) -E $(ALL_INC) $(ALL_SRC) $(ALL_LIB) > preproc.c

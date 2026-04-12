@@ -62,6 +62,14 @@ void void_layer_on_event(Event* event) {
                         window_set_viewport(window_viewport.x, window_viewport.y, window_viewport.z, window_viewport.w);
                         break;
                 }
+                case ENN_INPUT_KEY_EVENT:
+                {
+                        struct { i32 key, action; }* data = event -> data;
+                        if (data -> key == GLFW_KEY_F11 && data -> action == GLFW_PRESS) {
+                                window_flip_fullscreen();
+                        }
+                        break;
+                }
                 default: break;
         }
 }

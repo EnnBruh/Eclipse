@@ -272,14 +272,14 @@ void network_layer_on_update(f64 dt) {
         net_state.time_since_send += dt;
         net_state.time_since_recv += dt;
 
-        if (net_state.status == ENN_NETWORK_CONNECTED && net_state.time_since_recv > 5.0) {
+        if (net_state.status == ENN_NETWORK_CONNECTED && net_state.time_since_recv > 10.0) {
                 net_state.status = ENN_NETWORK_DISCONNECTED;
                 sprintf(error, "ERROR: CONNECTION TIMED OUT");
                 layer_set_inactive(game_layer_id);
                 return;
         }
 
-        if (net_state.status == ENN_NETWORK_CONNECTING && net_state.time_since_recv > 5.0) {
+        if (net_state.status == ENN_NETWORK_CONNECTING && net_state.time_since_recv > 10.0) {
                 net_state.status = ENN_NETWORK_DISCONNECTED;
                 sprintf(error, "ERROR: CONNECTION TIMED OUT");
                 layer_set_inactive(game_layer_id);
