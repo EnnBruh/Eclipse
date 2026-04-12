@@ -15,7 +15,6 @@ ENNDEF_PUBLIC i32 network_get_error(void) {
 #define DNS_SERVER_IP "8.8.8.8"
 #define DNS_SERVER_PORT 53
 
-
 ENNDEF_PUBLIC void network_get_local(void) {
         DEBUG_TRACE();
         strcpy(net_state.self_info.LOCAL_IP, "127.0.0.1");
@@ -126,9 +125,18 @@ ENNDEF_PUBLIC void network_get_public(void) {
         DEBUG_UNTRACE();
 }
 
+static char public_address[128];
+static char local_address[128];
+static vector(char) input_string;
+static char error[256];
+static Sprite background;
+
+
 void network_layer_init(void) {
         DEBUG_TRACE();
         net_state.status = ENN_NETWORK_DISCONNECTED;
+        net_state.time_since_send = 0.0;
+        net_state.time_since_recv = 0.0;
 
         net_state.self_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (ENN_IS_SOCKET_INVALID(net_state.self_sock)) {
@@ -170,6 +178,15 @@ void network_layer_init(void) {
         LOG("[Network] Public IP: %s:%" PRIu16, net_state.self_info.PUBLIC_IP, net_state.self_info.PUBLIC_PORT);
         LOG("[Network] Local IP: %s:%" PRIu16, net_state.self_info.LOCAL_IP, net_state.self_info.LOCAL_PORT);
 
+        sprintf(public_address, "YOUR PUBLIC IP: %s:%" PRIu16, net_state.self_info.PUBLIC_IP, net_state.self_info.PUBLIC_PORT);
+        sprintf(local_address, "YOUR LOCAL IP: %s:%" PRIu16, net_state.self_info.LOCAL_IP, net_state.self_info.LOCAL_PORT);
+
+        vector_reserve(input_string, 64);
+
+        background = render_sprite_create(&global_render.sprite_sheet,
+                (i32vec2) { 0, 567 },
+                (i32vec2) { 383, 783 });
+
         DEBUG_UNTRACE();
 }
 
@@ -177,10 +194,192 @@ void network_layer_term(void) {
 }
 
 void network_layer_on_render(void) {
+        DEBUG_TRACE();
+        if (net_state.status == ENN_NETWORK_CONNECTED) {
+                DEBUG_UNTRACE();
+                return ;
+        }
+        render_proj_set((mat4) {
+                1, 0, 0, 0,
+                0, -1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+        });
+
+        render_sprite_push(
+                (f32vec2) { -1.0, -1.0 },
+                (f32vec2) { 1.0, 1.0 },
+                &background);
+
+        switch (net_state.status) {
+                case ENN_NETWORK_DISCONNECTED:
+                {
+                        render_text_push(
+                                (f32vec2) { -0.3, -0.8 },
+                                "DISCONNECTED", 0xa1274eFF, 0.1);
+                        break;
+                }
+                case ENN_NETWORK_CONNECTING:
+                {
+                        render_text_push(
+                                (f32vec2) { -0.25, -0.8 },
+                                "CONNECTING", 0xffd37fFF, 0.1);
+                        break;
+                }
+                case ENN_NETWORK_CONNECTED:
+                {
+                        render_text_push(
+                                (f32vec2) { -0.225, -0.8 },
+                                "CONNECTED", 0xadef8fFF, 0.1);
+                        break;
+                }
+                default: break;
+        }
+
+        render_text_push(
+                (f32vec2) { -0.9, -0.5 },
+                public_address, 0xFFFFFFFF, 0.1);
+
+        render_text_push(
+                (f32vec2) { -0.9, -0.35 },
+                local_address, 0xFFFFFFFF, 0.1);
+
+        render_rectangle_push(
+                (f32vec2) { -0.8, 0.0 },
+                (f32vec2) { 0.8, 0.1 },
+                0xAAAAAA80);
+
+        if (vector_size(input_string) == 0) {
+                render_text_push(
+                    (f32vec2){-0.8, 0.0},
+                    "YOUR FRIEND'S PUBLIC IP", 0x505050AA, 0.09);
+        } else {
+                render_text_push(
+                    (f32vec2){-0.8, 0.0},
+                    input_string.data + input_string.start, 0xFFFFFFFF, 0.09);
+        }
+
+        render_text_push(
+                (f32vec2) { -0.8, 0.5 },
+                error, 0xa1274eFF, 0.05);
+        DEBUG_UNTRACE();
 }
 
 void network_layer_on_update(f64 dt) {
+        DEBUG_TRACE();
+        if (net_state.status == ENN_NETWORK_DISCONNECTED) return;
+
+        net_state.time_since_send += dt;
+        net_state.time_since_recv += dt;
+
+        if (net_state.status == ENN_NETWORK_CONNECTED && net_state.time_since_recv > 5.0) {
+                net_state.status = ENN_NETWORK_DISCONNECTED;
+                sprintf(error, "ERROR: CONNECTION TIMED OUT");
+                layer_set_inactive(game_layer_id);
+                return;
+        }
+
+        if (net_state.status == ENN_NETWORK_CONNECTING && net_state.time_since_recv > 5.0) {
+                net_state.status = ENN_NETWORK_DISCONNECTED;
+                sprintf(error, "ERROR: CONNECTION TIMED OUT");
+                layer_set_inactive(game_layer_id);
+                return;
+        }
+
+        byte buffer[512];
+        struct sockaddr_in from;
+        socklen_t from_len = (sizeof from);
+
+        while (true) {
+                i32 bytes = recvfrom(net_state.self_sock, (char*)buffer, (int)(sizeof buffer), 0, (struct sockaddr*)&from, &from_len);
+                if (bytes <= 0) break;
+
+                if (from.sin_addr.s_addr != net_state.friend_address.sin_addr.s_addr) continue;
+
+                if (bytes >= 5) {
+                        u32 magic = ((u32)buffer[0] << 24) | ((u32)buffer[1] << 16) | ((u32)buffer[2] << 8) | buffer[3];
+                        
+                        if (magic == ENN_MAGIC_NUMBER) {
+                                net_state.time_since_recv = 0.0;
+                                NetworkPacketType type = (NetworkPacketType)buffer[4];
+
+                                if (type == ENN_PKT_CONNECT_REQ) {
+                                        network_packet_send(ENN_PKT_CONNECT_ACK, NULL, 0);
+                                        if (net_state.status == ENN_NETWORK_CONNECTING) {
+                                                net_state.status = ENN_NETWORK_CONNECTED;
+                                                error[0] = '\0';
+                                                layer_set_active(game_layer_id);
+                                        }
+                                } else if (type == ENN_PKT_CONNECT_ACK && net_state.status == ENN_NETWORK_CONNECTING) {
+                                        net_state.status = ENN_NETWORK_CONNECTED;
+                                        error[0] = '\0';
+                                        layer_set_active(game_layer_id);
+                                }
+                        }
+                }
+        }
+
+        if (net_state.status == ENN_NETWORK_CONNECTING && net_state.time_since_send >= 0.1) {
+                network_packet_send(ENN_PKT_CONNECT_REQ, NULL, 0);
+        } else if (net_state.status == ENN_NETWORK_CONNECTED && net_state.time_since_send >= 1.0) {
+                network_packet_send(ENN_PKT_CONNECT_MNT, NULL, 0);
+        }
+        DEBUG_UNTRACE();
 }
 
 void network_layer_on_event(Event* event) {
+        DEBUG_TRACE();
+        if (net_state.status == ENN_NETWORK_CONNECTED) {
+                DEBUG_UNTRACE();
+                return ;
+        }
+        switch (event -> type) {
+                case ENN_INPUT_TEXT_EVENT:
+                {
+                        struct { u32 code; }* data = event -> data;
+                        if (data -> code < ENN_FONT_ATLAS_FIRST_CHAR || data -> code > ENN_FONT_ATLAS_LAST_CHAR) break;
+                        char ch = (char)data -> code;
+                        vector_push_back(input_string, ch);
+                        break;
+                }
+                case ENN_INPUT_KEY_EVENT:
+                {
+                        struct { i32 key, action; }* data = event -> data;
+                        if (data -> key == GLFW_KEY_BACKSPACE && (data -> action == GLFW_PRESS || data -> action == GLFW_REPEAT)) {
+                                if (vector_size(input_string) <= 0) break;
+                                vector_pop_back(input_string);
+                                input_string.data[input_string.end] = '\0';
+                        }
+
+                        if (data -> key == GLFW_KEY_ENTER && (data -> action == GLFW_PRESS || data -> action == GLFW_REPEAT)) {
+                                net_state.status = ENN_NETWORK_CONNECTING;
+                                char address[256] = { 0 };
+                                memcpy(address, input_string.data + input_string.start, (sizeof (char)) * (vector_size(input_string)));
+                                char* discrim = strchr(address, ':');
+                                if (discrim == NULL) {
+                                        net_state.status = ENN_NETWORK_DISCONNECTED;
+                                        sprintf(error, "ERROR: YOU NEED TO SPECIFY THE IP AND PORT X.X.X.X:XXXX");
+                                        break;
+                                }
+                                *discrim = '\0';
+                                net_state.friend_address.sin_family = AF_INET;
+                                
+                                u16 port = 0;
+                                sscanf(discrim + 1, "%" SCNu16, &port);
+                                net_state.friend_address.sin_port = htons(port);
+                                net_state.friend_address.sin_addr.s_addr = inet_addr(address);
+                                LOG("[Network] Connecting to %s:%" PRIu16, address, port);
+                                net_state.time_since_send = 0.1;
+                                net_state.time_since_recv = 0.0;
+                                break;
+                        }
+
+                        if (data -> key == GLFW_KEY_ESCAPE && data -> action == GLFW_PRESS) {
+                                layer_set_inactive(network_layer_id);
+                                layer_set_active(menu_layer_id);
+                        }
+                }
+                default: break;
+        }
+        DEBUG_UNTRACE();
 }

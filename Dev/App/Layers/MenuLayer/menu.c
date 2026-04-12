@@ -79,8 +79,8 @@ void menu_layer_on_event(Event* event) {
                         struct { f64vec2 screen; }* data = event -> data; 
                         f32vec2 ndc = screen_to_ndc((f32vec2) { data -> screen.x, data -> screen.y });
 
-                        LOG("screen = %lf %lf", data -> screen.x, data -> screen.y);
-                        LOG("ndc = %f %f", ndc.x, ndc.y);
+                        // LOG("screen = %lf %lf", data -> screen.x, data -> screen.y);
+                        // LOG("ndc = %f %f", ndc.x, ndc.y);
 
                         for (i32 i = buttons.start; i < buttons.end; ++i)
                                 if (is_button_under(buttons.data[i], ndc)) buttons.data[i].color = BUTTON_HOVER_COLOR;
@@ -95,7 +95,8 @@ void menu_layer_on_event(Event* event) {
                                         if (buttons.data[i].color == BUTTON_HOVER_COLOR) {
                                                 if (strcmp(buttons.data[i].name, "PLAY") == 0) {
                                                         layer_set_inactive(menu_layer_id);
-                                                        layer_set_active(game_layer_id);
+                                                        if (net_state.status == ENN_NETWORK_DISCONNECTED) layer_set_active(network_layer_id);
+                                                        else layer_set_active(game_layer_id);
                                                 } else if (strcmp(buttons.data[i].name, "SETTINGS") == 0) {
                                                 } else if (strcmp(buttons.data[i].name, "QUIT") == 0) {
                                                         core_stop();

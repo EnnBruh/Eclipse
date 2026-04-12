@@ -50,6 +50,12 @@ typedef struct NetworkInformation {
         char    PUBLIC_IP[64];
 } NetworkInformation;
 
+typedef enum NetworkPacketType {
+        ENN_PKT_CONNECT_REQ = 0x01,
+        ENN_PKT_CONNECT_ACK = 0x02,
+        ENN_PKT_CONNECT_MNT = 0x03,
+        ENN_PKT_GAME_DATA   = 0x04
+} NetworkPacketType;
 extern struct NetworkState {
         ENN_NETWORK_LOCALITY    choice;
         ENN_NETWORK_STATUS      status;
@@ -59,8 +65,30 @@ extern struct NetworkState {
 
         struct sockaddr_in      friend_address;
 
-        f64                     time_send;
-        f64                     time_recv;
+        f64                     time_since_send;
+        f64                     time_since_recv;
 } net_state;
 
+#define ENN_MAGIC_NUMBER 0x45434C50
+
+ENNDEF_PUBLIC void network_packet_send(NetworkPacketType type, const byte* payload, u32 size) {
+        DEBUG_TRACE();
+        if (net_state.status == ENN_NETWORK_DISCONNECTED) return;
+        if (size > 507) return;
+
+        byte buffer[512];
+        buffer[0] = (ENN_MAGIC_NUMBER >> 24) & 0xFF;
+        buffer[1] = (ENN_MAGIC_NUMBER >> 16) & 0xFF;
+        buffer[2] = (ENN_MAGIC_NUMBER >> 8) & 0xFF;
+        buffer[3] = ENN_MAGIC_NUMBER & 0xFF;
+        buffer[4] = (byte)type;
+
+        if (payload != NULL && size > 0) {
+                memcpy(&buffer[5], payload, size);
+        }
+
+        sendto(net_state.self_sock, (const char*)buffer, size + 5, 0, (struct sockaddr*)&net_state.friend_address, (sizeof net_state.friend_address));
+        net_state.time_since_send = 0.0;
+        DEBUG_TRACE();
+}
 #endif

@@ -28,7 +28,7 @@ void app_init(void) {
         });
 
         network_layer_id = window_push_layer(&(Layer) {
-                .active = true,
+                .active = false,
                 .priority = 1,
                 LAYER_ASSIGN(network)
         });
