@@ -2,7 +2,7 @@
 
 LayerID void_layer_id;
 
-static i32vec4 window_viewport;
+i32vec4 window_viewport;
 
 void void_layer_init(void) {
         i32vec2 window_dim = window_get_framebuff_dim();

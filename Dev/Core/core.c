@@ -183,3 +183,10 @@ void core_term(void) {
 }
 
 #endif
+
+void core_stop(void) {
+        DEBUG_TRACE();
+        LOG("[Core] Core Stop request recieved");
+        _core_state._running = false;
+        DEBUG_UNTRACE();
+}

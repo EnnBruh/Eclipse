@@ -1,6 +1,7 @@
 #include "Rendering/render.h"
 
 struct Renderer global_render;
+static Sprite WHITE_TEXTURE;
 
 ENNDEF_PUBLIC void render_init_sprite_sheet(void) {
         DEBUG_TRACE();
@@ -31,9 +32,9 @@ ENNDEF_PUBLIC void render_init_font_atlas(void) {
                 
                 global_render.font_atlas.char_sprite[ch - ENN_FONT_ATLAS_FIRST_CHAR] = (f32vec4) {
                         .x = (f32)(col * global_render.font_atlas.char_dim.x + global_render.font_atlas.font_offset.x) / (f32)global_render.sprite_sheet.width,
-                        .w = (f32)(row * global_render.font_atlas.char_dim.y + global_render.font_atlas.font_offset.y) / (f32)global_render.sprite_sheet.height,
+                        .y = (f32)(row * global_render.font_atlas.char_dim.y + global_render.font_atlas.font_offset.y) / (f32)global_render.sprite_sheet.height,
                         .z = (f32)(col * global_render.font_atlas.char_dim.x + global_render.font_atlas.char_dim.x + global_render.font_atlas.font_offset.x) / (f32)global_render.sprite_sheet.width,
-                        .y = (f32)(row * global_render.font_atlas.char_dim.y + global_render.font_atlas.char_dim.y + global_render.font_atlas.font_offset.y) / (f32)global_render.sprite_sheet.height
+                        .w = (f32)(row * global_render.font_atlas.char_dim.y + global_render.font_atlas.char_dim.y + global_render.font_atlas.font_offset.y) / (f32)global_render.sprite_sheet.height
                 };
 
                 // swap(global_render.font_atlas.char_sprite[ch - ENN_FONT_ATLAS_FIRST_CHAR].y, global_render.font_atlas.char_sprite[ch - ENN_FONT_ATLAS_FIRST_CHAR].w);
@@ -54,16 +55,16 @@ void render_init(void) {
         glGenVertexArrays(1, &global_render.vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, global_render.vbo);
-        glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex)) * ENN_RENDER_VERTEX_BUFF_SIZE, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (sizeof (Vertex)) * ENN_RENDER_VERTEX_BUFF_SIZE, NULL, GL_DYNAMIC_DRAW);
 
         glBindVertexArray(global_render.vao);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, (sizeof(Vertex)), (void *)offsetof(Vertex, pos));
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, (sizeof (Vertex)), (void *)offsetof(Vertex, pos));
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, (sizeof(Vertex)), (void *)offsetof(Vertex, color));
+        glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, (sizeof (Vertex)), (void *)offsetof(Vertex, color));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (sizeof(Vertex)), (void *)offsetof(Vertex, texture_pos));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (sizeof (Vertex)), (void *)offsetof(Vertex, texture_pos));
         glEnableVertexAttribArray(2);
 
         global_render.shader = render_shader_compile("vertex.glsl", "fragment.glsl");
@@ -76,6 +77,9 @@ void render_init(void) {
         render_init_sprite_sheet();
         render_init_font_atlas();
 
+        WHITE_TEXTURE = render_sprite_create(&global_render.sprite_sheet,
+                (i32vec2) { 0, 0 },
+                (i32vec2) { 16, 16 });
 
         global_render.proj_matrix_location = glGetUniformLocation(global_render.shader, "projection");
         mat4 default_ndc_proj = {
@@ -103,7 +107,7 @@ void render_buff_draw(void) {
                 glBindVertexArray(global_render.vao);
                 glBindBuffer(GL_ARRAY_BUFFER, global_render.vbo);
 
-                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * global_render.buff_size, global_render.buff);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, (sizeof (Vertex)) * global_render.buff_size, global_render.buff);
                 glDrawArrays(GL_TRIANGLES, 0, global_render.buff_size);
                 
                 // LOG("[Render] Drawing %" PRIi32 " vertices", global_render.buff_size[0]);
@@ -139,40 +143,14 @@ void render_proj_set(const f32* proj_matrix) {
         DEBUG_UNTRACE();
 }
 
-static f32vec2 WHITE_TEXTURE = { 0.0, 0.0 };
 
 void render_rectangle_push(f32vec2 top_left, f32vec2 bott_right, u32 color) {
         DEBUG_TRACE();
-        if (global_render.buff_size + 6 > ENN_RENDER_VERTEX_BUFF_SIZE)
-                render_buff_draw();
-
-        Vertex* vert = &(global_render.buff[global_render.buff_size]);
-
-        vert[0].pos = top_left;
-        vert[0].color = color;
-        vert[0].texture_pos = WHITE_TEXTURE;
-
-        vert[1].pos = (f32vec2){.x = top_left.x, .y = bott_right.y};
-        vert[1].color = color;
-        vert[1].texture_pos = WHITE_TEXTURE;
-
-        vert[2].pos = (f32vec2){.x = bott_right.x, .y = top_left.y};
-        vert[2].color = color;
-        vert[2].texture_pos = WHITE_TEXTURE;
-
-        vert[3].pos = (f32vec2){.x = bott_right.x, .y = top_left.y};
-        vert[3].color = color;
-        vert[3].texture_pos = WHITE_TEXTURE;
-
-        vert[4].pos = (f32vec2){.x = top_left.x, .y = bott_right.y};
-        vert[4].color = color;
-        vert[4].texture_pos = WHITE_TEXTURE;
-
-        vert[5].pos = bott_right;
-        vert[5].color = color;
-        vert[5].texture_pos = WHITE_TEXTURE;
-        global_render.buff_size += 6;
+        render_sprite_push_color(top_left, bott_right, &WHITE_TEXTURE, color);
         DEBUG_UNTRACE();
+}
+
+void render_line_push(f32vec2 pos1, f32vec2 pos2, f32 width, u32 color) {
 }
 
 void render_sprite_push_color(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite, u32 color) {

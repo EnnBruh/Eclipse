@@ -55,20 +55,21 @@ void game_layer_on_render(void) {
         
         player_render_shadow();
 
-        // render_rectangle_push(
-        //         (f32vec2) { -1.0, 1.0 },
-        //         (f32vec2) { 1.0, -1.0 },
-        //         0xFFFFFFFF);
 
         render_proj_set((mat4) {
                 1, 0, 0, 0,
-                0, 1, 0, 0,
+                0, -1, 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1
         });
 
+        // render_rectangle_push(
+        //         (f32vec2) { -1.0, -1.0 },
+        //         (f32vec2) { 1.0, 1.0 },
+        //         0xFF0000FF);
+
         render_text_push(
-                (f32vec2) { -0.95, 0.85 },
+                (f32vec2) { -0.95, -0.85 },
                 fps_buff, 0xFFFFFFFF, 0.1);
 
 }
@@ -149,6 +150,11 @@ void game_layer_on_event(Event* event) {
                 {
                         struct { i32 key, action; }* data = event -> data;
                         is_key_down[data -> key] = (data -> action == GLFW_PRESS || data -> action == GLFW_REPEAT);
+
+                        if (data -> key == GLFW_KEY_ESCAPE && data -> action == GLFW_PRESS) {
+                                layer_set_inactive(game_layer_id);
+                                layer_set_active(menu_layer_id);
+                        }
                         break;
                 }
                 case ENN_WINDOW_RESIZE_EVENT:

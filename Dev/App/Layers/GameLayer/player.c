@@ -125,4 +125,7 @@ void player_init_shadow(void) {
 
 void player_render_shadow(void) {
         Shadow.render[Shadow.state]();
+        render_text_push(
+                (f32vec2) { Shadow.pos.x, Shadow.pos.y - 0.5 },
+                "Enn", 0xFFFFFFFF, 0.5);
 }

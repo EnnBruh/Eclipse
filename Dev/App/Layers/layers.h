@@ -3,6 +3,7 @@
 
 #include "core.h"
 #include "Rendering/render.h"
+#include "UI/ui.h"
 
 #define LAYER_DEFINE(name)                                                            \
         extern LayerID EXPAND(JOIN(name, _layer_id));                                 \
@@ -26,6 +27,7 @@ LAYER_DEFINE(menu);
 LAYER_DEFINE(game);
 
 
+extern i32vec4 window_viewport;
 
 typedef enum ENN_NETWORK_LOCALITY {
         ENN_NETWORK_LOCALHOST,

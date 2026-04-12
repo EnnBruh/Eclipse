@@ -15,6 +15,7 @@
 ENNDEF_PRIVATE void core_init(void);
 ENNDEF_PRIVATE void core_run(void);
 ENNDEF_PRIVATE void core_term(void);
+ENNDEF_PRIVATE void core_stop(void);
 
 
 #ifdef __cplusplus
