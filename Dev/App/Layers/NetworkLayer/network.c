@@ -308,12 +308,30 @@ void network_layer_on_update(f64 dt) {
                                         if (net_state.status == ENN_NETWORK_CONNECTING) {
                                                 net_state.status = ENN_NETWORK_CONNECTED;
                                                 error[0] = '\0';
-                                                layer_set_active(game_layer_id);
+                                                layer_set_active(select_layer_id);
                                         }
                                 } else if (type == ENN_PKT_CONNECT_ACK && net_state.status == ENN_NETWORK_CONNECTING) {
                                         net_state.status = ENN_NETWORK_CONNECTED;
                                         error[0] = '\0';
-                                        layer_set_active(game_layer_id);
+                                        layer_set_active(select_layer_id);
+                                } else if (type == ENN_PKT_GAME_DATA && net_state.status == ENN_NETWORK_CONNECTED) {
+                                        if (bytes >= (i32)(5 + (sizeof (PlayerData)))) {
+                                                static PlayerData data;
+                                                memcpy(&data, &buffer[5], (sizeof (PlayerData)));
+                                                game_layer_on_event(&(Event) {
+                                                        .type = ENN_NETWORK_GAMEDATA_EVENT,
+                                                        .data = (void*)&data
+                                                });
+                                        }
+                                } else if (type == ENN_PKT_SELECT_DATA && net_state.status == ENN_NETWORK_CONNECTED) {
+                                        if (bytes >= (i32)(5 + (sizeof (SelectData)))) {
+                                                static SelectData data;
+                                                memcpy(&data, &buffer[5], (sizeof (SelectData)));
+                                                select_layer_on_event(&(Event) {
+                                                        .type = ENN_NETWORK_GAMEDATA_EVENT,
+                                                        .data = (void*)&data
+                                                });
+                                        }
                                 }
                         }
                 }

@@ -10,6 +10,7 @@ typedef struct Button {
 
         char*   name;
         u32     color;
+        bool    hover;
 } Button;
 
 #define is_button_under(_button, _coord)                                                                   \

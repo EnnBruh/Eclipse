@@ -4,6 +4,7 @@
 #include "core.h"
 #include "Rendering/render.h"
 #include "UI/ui.h"
+#include "GameLayer/player.h"
 
 #define LAYER_DEFINE(name)                                                            \
         extern LayerID EXPAND(JOIN(name, _layer_id));                                 \
@@ -25,10 +26,28 @@ LAYER_DEFINE(debug);
 LAYER_DEFINE(network);
 LAYER_DEFINE(menu);
 LAYER_DEFINE(game);
+LAYER_DEFINE(select);
 
 
 extern i32vec4 window_viewport;
 
+ENNDEF_PUBLIC f32vec2 screen_to_ndc(f32vec2 screen) {
+        return (f32vec2) {
+                .x = (screen.x - window_viewport.x) / ((f32)(window_viewport.z) * 0.5) - 1.0,
+                .y = (screen.y - window_viewport.y) / ((f32)(window_viewport.w) * 0.5) - 1.0
+        };
+}
+typedef struct __attribute__((packed)) PlayerData {
+        f32vec2                 pos;
+        ENN_PLAYER_STATE        state;
+        byte                    flags;
+} PlayerData;
+
+#define ENN_CHOICE_SHADOW 0x01
+#define ENN_CHOICE_LIGHT 0x02
+typedef struct __attribute__((packed)) SelectData {
+        byte choice;
+} SelectData;
 typedef enum ENN_NETWORK_LOCALITY {
         ENN_NETWORK_LOCALHOST,
         ENN_NETWORK_LAN,
@@ -54,7 +73,8 @@ typedef enum NetworkPacketType {
         ENN_PKT_CONNECT_REQ = 0x01,
         ENN_PKT_CONNECT_ACK = 0x02,
         ENN_PKT_CONNECT_MNT = 0x03,
-        ENN_PKT_GAME_DATA   = 0x04
+        ENN_PKT_GAME_DATA   = 0x04,
+        ENN_PKT_SELECT_DATA = 0x05
 } NetworkPacketType;
 extern struct NetworkState {
         ENN_NETWORK_LOCALITY    choice;

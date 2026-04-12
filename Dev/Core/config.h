@@ -44,6 +44,7 @@
 /* ----- Optional Configs ----- */
   #define ENN_INCLUDE_OPTIONAL
 //   #define ENN_MULTI_WINDOW
+//   #define ENN_FOCUS_WINDOW_OPTIMIZATION
 
 //   #define ENN_WINDOW_MIN_WIDTH 320
 //   #define ENN_WINDOW_MIN_HEIGHT 180
@@ -52,8 +53,9 @@
 //   #define ENN_DEFAULT_RENDERER_VERTEX_BUFF_SIZE 2048
 
 
-  #define ENN_USER_DEFINED_EVENTS       \
-                ENN_NETWORK_SEND_PCKT_EVENT
+  #define ENN_USER_DEFINED_EVENTS               \
+                ENN_NETWORK_GAMEDATA_EVENT,      \
+                ENN_GAME_SELECT_PLAYER_EVENT    
 //   #define ENN_ASSETS_PATH "/Assets/"
 //   #define ENN_SHADERS_PATH "/Assets/Shaders/"
 //   #define ENN_TEXTURES_PATH "/Assets/Textures/"

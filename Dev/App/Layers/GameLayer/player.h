@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include "Rendering/render.h"
 
 #define ENN_PLAYER_FACING_EAST 1
@@ -13,8 +16,8 @@
 
 #define ENN_NUM_PLAYER_STATES 4
 
-#define ENN_PLAYER_WIDTH 2
-#define ENN_PLAYER_HEIGHT 3
+#define ENN_PLAYER_WIDTH 4
+#define ENN_PLAYER_HEIGHT 6
 
 #define ENN_MAX_ANIM_FRAMES 20
 
@@ -49,8 +52,12 @@ typedef struct Player {
         Sprite                  sprites[ENN_NUM_PLAYER_STATES][ENN_MAX_ANIM_FRAMES];
 } Player;
 
+
 extern Player Light;
 extern Player Shadow;
+
+extern Player* local_player;
+extern Player* remote_player;
 
 ENNDEF_PRIVATE void player_init_shadow(void);
 ENNDEF_PRIVATE void player_init_light(void);
@@ -58,3 +65,5 @@ ENNDEF_PRIVATE void player_init_light(void);
 ENNDEF_PRIVATE void player_render_shadow(void);
 ENNDEF_PRIVATE void player_render_light(void);
 
+
+#endif

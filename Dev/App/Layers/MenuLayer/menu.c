@@ -65,12 +65,6 @@ void menu_layer_on_render(void) {
 void menu_layer_on_update(f64 dt) {
 }
 
-ENNDEF_PUBLIC f32vec2 screen_to_ndc(f32vec2 screen) {
-        return (f32vec2) {
-                .x = (screen.x - window_viewport.x) / ((f32)(window_viewport.z) * 0.5) - 1.0,
-                .y = (screen.y - window_viewport.y) / ((f32)(window_viewport.w) * 0.5) - 1.0
-        };
-}
 
 void menu_layer_on_event(Event* event) {
         switch (event -> type) {
@@ -95,6 +89,7 @@ void menu_layer_on_event(Event* event) {
                                         if (buttons.data[i].color == BUTTON_HOVER_COLOR) {
                                                 if (strcmp(buttons.data[i].name, "PLAY") == 0) {
                                                         layer_set_inactive(menu_layer_id);
+                                                        // layer_set_active(select_layer_id);
                                                         if (net_state.status == ENN_NETWORK_DISCONNECTED) layer_set_active(network_layer_id);
                                                         else layer_set_active(game_layer_id);
                                                 } else if (strcmp(buttons.data[i].name, "SETTINGS") == 0) {

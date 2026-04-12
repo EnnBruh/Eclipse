@@ -9,7 +9,7 @@ void app_init(void) {
                 .width = 1280,
                 .height = 720,
                 .is_resizable = true,
-                .has_vsync = true
+                // .has_vsync = true
 
         });
 
@@ -43,6 +43,12 @@ void app_init(void) {
                 .active = false,
                 .priority = 2,
                 LAYER_ASSIGN(game)
+        });
+
+        select_layer_id = window_push_layer(&(Layer) {
+                .active = false,
+                .priority = 2,
+                LAYER_ASSIGN(select)
         });
 
 

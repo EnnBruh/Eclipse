@@ -241,13 +241,13 @@ void render_sprite_push(f32vec2 top_left, f32vec2 bott_right, Sprite* sprite) {
 
 void render_sprite_flip_vertical(Sprite* sprite) {
         DEBUG_TRACE();
-        swap(sprite -> texture_top_left.x, sprite -> texture_bott_right.x);
+        swap(sprite -> texture_top_left.y, sprite -> texture_bott_right.y);
         DEBUG_UNTRACE();
 }
 
 void render_sprite_flip_horizontal(Sprite* sprite) {
         DEBUG_TRACE();
-        swap(sprite -> texture_top_left.y, sprite -> texture_bott_right.y);
+        swap(sprite -> texture_top_left.x, sprite -> texture_bott_right.x);
         DEBUG_UNTRACE();
 }
 

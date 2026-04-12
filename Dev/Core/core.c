@@ -81,7 +81,9 @@ void core_run(void) {
 			for (j = _core_state._window_arr.data[i].layer_stack.start; j < _core_state._window_arr.data[i].layer_stack.end && _core_state._window_arr.data[i].layer_stack.data[j].active; ++j)
 					_core_state._window_arr.data[i].layer_stack.data[j].on_update(_core_state._time_current);
                         
+#                       ifdef ENN_FOCUS_WINDOW_OPTIMIZAION
 			if ((_core_state._window_arr.data[i].flags & (1 << ENN_WINDOW_FOCUS_BIT))) {
+#                       endif
 				glfwMakeContextCurrent(_core_state._window_arr.data[i].handle);
 				glClear(GL_COLOR_BUFFER_BIT);
 
@@ -89,7 +91,9 @@ void core_run(void) {
                                         _core_state._window_arr.data[i].layer_stack.data[j].on_render();
                                 
 				glfwSwapBuffers(_core_state._window_arr.data[i].handle);
+#                       ifdef ENN_FOCUS_WINDOW_OPTIMIZATION
 			}
+#                       endif
 		}
 
 		glfwPollEvents();
@@ -147,14 +151,18 @@ void core_run(void) {
                         for (i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end && _core_state._window_main.layer_stack.data[i].active; ++i)
                                         _core_state._window_main.layer_stack.data[i].on_update(_core_state._time_delta);
 
+#                       ifdef ENN_FOCUS_WINDOW_OPTIMIZATION
                         if ((_core_state._window_main.flags & (1 << ENN_WINDOW_FOCUS_BIT))) {
+#                       endif
                                 glClear(GL_COLOR_BUFFER_BIT);
 
                                 for (i = _core_state._window_main.layer_stack.start; i < _core_state._window_main.layer_stack.end && _core_state._window_main.layer_stack.data[i].active; ++i)
                                         _core_state._window_main.layer_stack.data[i].on_render();
 
                                 glfwSwapBuffers(_core_state._window_main.handle);
+#                       ifdef ENN_FOCUS_WINDOW_OPTIMIZATION
                         }
+#                       endif
 
         		glfwPollEvents();
         	}
